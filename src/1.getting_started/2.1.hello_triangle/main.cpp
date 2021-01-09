@@ -1,4 +1,4 @@
-// https://learnopengl.com/Getting-started/Hello-Window
+// https://learnopengl.com/Getting-started/Hello-Triangle
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -127,7 +127,7 @@ out vec4 FragColor;
 void main()
 {
     FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
-} 
+}
 
 )";
 

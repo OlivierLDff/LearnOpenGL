@@ -5,6 +5,18 @@ project("LearnOpenGL" VERSION 1.0 LANGUAGES CXX)
 include(cmake/FetchGlad.cmake)
 include(cmake/FetchGlfw.cmake)
 
+add_library(learnopengl STATIC
+  "lib/learnopengl/shader.hpp"
+  "lib/learnopengl/shader.cpp"
+)
+
+target_link_libraries(learnopengl PRIVATE
+  glfw
+  glad
+)
+
+target_include_directories(learnopengl PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/lib")
+
 set(CHAPTERS
   1.getting_started
   2.lighting
@@ -26,6 +38,9 @@ set(1.getting_started
   3.1.shaders_uniform
   3.2.shaders_interpolation
   3.3.shaders_class
+  3.4.shaders_exercise1
+  3.5.shaders_exercise2
+  3.6.shaders_exercise3
   4.1.textures
   4.2.textures_combined
   4.4.textures_exercise2
@@ -133,27 +148,32 @@ foreach(CHAPTER ${CHAPTERS})
       target_link_libraries(${NAME} PRIVATE
         glfw
         glad
+        learnopengl
       )
       target_compile_features(${NAME} PUBLIC cxx_std_17)
+      set(OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/${CHAPTER}/${DEMO}")
+      set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR})
+      set_target_properties(${NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR})
+      set_target_properties(${NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR})
+      if(MSVC)
+        # Make sure shader are in working dir
+        set_target_properties(${NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${OUTPUT_DIR}")
+      endif()
       # copy shader files to build directory
-      #file(GLOB SHADERS
-      # "src/${CHAPTER}/${DEMO}/*.vs"
-      # # "src/${CHAPTER}/${DEMO}/*.frag"
-      # "src/${CHAPTER}/${DEMO}/*.fs"
-      # "src/${CHAPTER}/${DEMO}/*.gs"
-      # )
-      #foreach(SHADER ${SHADERS})
-      #  if(WIN32)
-      #    # configure_file(${SHADER} "test")
-      #    add_custom_command(TARGET ${NAME} PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${SHADER} $<TARGET_FILE_DIR:${NAME}>)
-      #  elseif(UNIX AND NOT APPLE)
-      #    file(COPY ${SHADER} DESTINATION ${CMAKE_SOURCE_DIR}/bin/${CHAPTER})
-      #  elseif(APPLE)
-      #    # create symbolic link for *.vs *.fs *.gs
-      #    get_filename_component(SHADERNAME ${SHADER} NAME)
-      #    makeLink(${SHADER} ${CMAKE_SOURCE_DIR}/bin/${CHAPTER}/${SHADERNAME} ${NAME})
-      #  endif(WIN32)
-      #endforeach(SHADER)
+      file(GLOB SHADERS
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/${CHAPTER}/${DEMO}/*.vs"
+        # "src/${CHAPTER}/${DEMO}/*.frag"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/${CHAPTER}/${DEMO}/*.fs"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/${CHAPTER}/${DEMO}/*.gs"
+      )
+      foreach(SHADER ${SHADERS})
+        add_custom_command(
+          TARGET ${NAME}
+          POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${SHADER} $<TARGET_FILE_DIR:${NAME}>
+          DEPENDS ${SHADER}
+          COMMENT "Copy ${SHADER}"
+        )
+      endforeach(SHADER)
     endif()
   endforeach()
 endforeach()

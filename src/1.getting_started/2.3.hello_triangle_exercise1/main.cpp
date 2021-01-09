@@ -1,4 +1,4 @@
-// https://learnopengl.com/Getting-started/Hello-Window
+// https://learnopengl.com/Getting-started/Hello-Triangle
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 

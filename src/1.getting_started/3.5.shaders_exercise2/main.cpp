@@ -1,8 +1,12 @@
 // https://learnopengl.com/Getting-started/Shaders
+
+#include <learnopengl/shader.hpp>
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <iostream>
+#include <sstream>
 #include <cmath>
 
 int initGLAD()
@@ -46,7 +50,34 @@ GLFWwindow* createWindowContext(const char* title, int width = 800, int height =
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 
+    glfwSwapInterval(1);
+
     return window;
+}
+
+void showFPS(GLFWwindow* pWindow)
+{
+    static double lastTime = 0;
+    static int nbFrames = 0;
+    // Measure speed
+    double currentTime = glfwGetTime();
+    double delta = currentTime - lastTime;
+    nbFrames++;
+    if(delta >= 1.0)
+    { // If last cout was more than 1 sec ago
+        std::cout << 1000.0 / double(nbFrames) << std::endl;
+
+        double fps = double(nbFrames) / delta;
+
+        std::stringstream ss;
+        ss << "LearnOpenGL"
+           << " [" << fps << " FPS]";
+
+        glfwSetWindowTitle(pWindow, ss.str().c_str());
+
+        nbFrames = 0;
+        lastTime = currentTime;
+    }
 }
 
 GLFWwindow* initialize()
@@ -108,87 +139,26 @@ bool checkShaderProgramCompilationError(unsigned int shaderProgram)
     return true;
 }
 
-// Applied for each vertices
-// Map vertices to screen coordinates
-// Vertices outside of -1.0 -> 1.0 are clipped
-const char* vertexShaderSource = R"(
-
-#version 330 core
-layout (location = 0) in vec3 aPos;
-void main()
-{
-   gl_Position = vec4(aPos, 1.0);
-}
-
-)";
-
-// Fragment shader is called for each pixel in our geometry
-// vec4 color is RGBA from 0.0 to 1.0
-const char* fragmentShaderSource = R"(
-
-#version 330 core
-out vec4 FragColor;
-
-uniform vec4 ourColor; // we set this variable in the OpenGL code.
-
-void main()
-{
-    FragColor = ourColor;
-}
-
-)";
-
-int main()
+int main(int argc, char** argv)
 {
     auto* window = initialize();
     if(!window)
         return -1;
 
     // SHADER PROGRAM
-
-    // Create a vertex Shader
-    // The vertex shader map each of our vertice to screen coordinate (between -1 to 1)
-    const unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
-    // Compile the shader from its source. A compile error can occurs.
-    glCompileShader(vertexShader);
-    if(!checkShaderCompilationError(vertexShader))
-        return -1;
-
-    // Create fragment shader
-    const unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, nullptr);
-    glCompileShader(fragmentShader);
-    if(!checkShaderCompilationError(fragmentShader))
-        return -1;
-
-    // Create our shader program that use the 2 already compiled shaders
-    const unsigned int shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-    if(!checkShaderProgramCompilationError(shaderProgram))
-        return -1;
-
-    // Shaders objects are no longer required onced they have been linked
-    // It's liked obj file (.o) for c/cpp
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+    auto shaderProgram = learnopengl::Shader("shader.vs", "shader.fs");
 
     // VERTEX DATA
 
     // Vertices of triangle shape in 3d. (x, y, z)
+    // clang-format off
     float vertices[] = {
-        -0.5f,
-        -0.5f,
-        0.0f, // left
-        0.5f,
-        -0.5f,
-        0.0f, // top
-        0.0f,
-        0.5f,
-        0.0f // right
+        // positions         // colors
+         0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom right
+        -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // bottom left
+         0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // top
     };
+    // clang-format on
 
     // VAO: Vertex Array Object
     // It's a list of vertex attribute pointer
@@ -206,9 +176,12 @@ int main()
     // Copy our data to the buffer
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     // Describe our vertex buffer 'vertices' with a vertex attributes pointers
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     // Index of vertex attributes is 0 because in shader we have 'layout (location = 0)'
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+    // Index of vertex attributes is 1 because in shader we have 'layout (location = 1)'
 
     // Unbind our VBO
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -225,12 +198,10 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // Update uniform color
+        shaderProgram.use();
         const auto timeValue = glfwGetTime();
-        const float greenValue = (std::sin(timeValue) / 2.0f) + 0.5f;
-        const int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-        glUseProgram(shaderProgram);
-        glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+        const float offset = (std::sin(timeValue) / 2.0f);
+        shaderProgram.setFloat("horizontalOffset", offset);
 
         // And draw the triangle with updated color
         glBindVertexArray(VAO);
@@ -239,11 +210,11 @@ int main()
         // Show rendered buffer in screen
         glfwPollEvents();
         glfwSwapBuffers(window);
+        showFPS(window);
     }
 
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
-    glDeleteProgram(shaderProgram);
 
     glfwTerminate();
 
