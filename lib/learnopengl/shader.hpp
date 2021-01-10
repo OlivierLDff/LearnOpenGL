@@ -1,5 +1,5 @@
-#ifndef __LEARNOPENGL_SHADER_HPP
-#define __LEARNOPENGL_SHADER_HPP
+#ifndef __LEARNOPENGL_SHADER_HPP__
+#define __LEARNOPENGL_SHADER_HPP__
 
 #include <string>
 

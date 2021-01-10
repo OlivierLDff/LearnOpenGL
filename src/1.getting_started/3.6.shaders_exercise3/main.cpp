@@ -1,6 +1,7 @@
 // https://learnopengl.com/Getting-started/Shaders
 
 #include <learnopengl/shader.hpp>
+#include <learnopengl/fpscounter.hpp>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -53,31 +54,6 @@ GLFWwindow* createWindowContext(const char* title, int width = 800, int height =
     glfwSwapInterval(1);
 
     return window;
-}
-
-void showFPS(GLFWwindow* pWindow)
-{
-    static double lastTime = 0;
-    static int nbFrames = 0;
-    // Measure speed
-    double currentTime = glfwGetTime();
-    double delta = currentTime - lastTime;
-    nbFrames++;
-    if(delta >= 1.0)
-    { // If last cout was more than 1 sec ago
-        std::cout << 1000.0 / double(nbFrames) << std::endl;
-
-        double fps = double(nbFrames) / delta;
-
-        std::stringstream ss;
-        ss << "LearnOpenGL"
-           << " [" << fps << " FPS]";
-
-        glfwSetWindowTitle(pWindow, ss.str().c_str());
-
-        nbFrames = 0;
-        lastTime = currentTime;
-    }
 }
 
 GLFWwindow* initialize()
@@ -212,7 +188,7 @@ int main(int argc, char** argv)
         // Show rendered buffer in screen
         glfwPollEvents();
         glfwSwapBuffers(window);
-        showFPS(window);
+        learnopengl::showFPS(window);
     }
 
     glDeleteVertexArrays(1, &VAO);

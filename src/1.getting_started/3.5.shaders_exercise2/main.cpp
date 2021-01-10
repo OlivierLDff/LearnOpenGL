@@ -96,6 +96,7 @@ GLFWwindow* initialize()
 
     int nrAttributes;
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
+    std::cout << "GL Version : " << glGetString(GL_VERSION) << std::endl;
     std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
 
     return window;

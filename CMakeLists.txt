@@ -4,15 +4,27 @@ project("LearnOpenGL" VERSION 1.0 LANGUAGES CXX)
 
 include(cmake/FetchGlad.cmake)
 include(cmake/FetchGlfw.cmake)
+include(cmake/FetchStb.cmake)
 
 add_library(learnopengl STATIC
   "lib/learnopengl/shader.hpp"
   "lib/learnopengl/shader.cpp"
+  "lib/learnopengl/fileinfo.hpp"
+  "lib/learnopengl/fileinfo.cpp"
+  "lib/learnopengl/fpscounter.hpp"
+  "lib/learnopengl/fpscounter.cpp"
+  "lib/learnopengl/texture.hpp"
+  "lib/learnopengl/texture.cpp"
+  "lib/learnopengl/window.hpp"
+  "lib/learnopengl/window.cpp"
+  "lib/learnopengl/stb_image.cpp"
 )
+target_compile_features(learnopengl PUBLIC cxx_std_20)
 
 target_link_libraries(learnopengl PRIVATE
   glfw
   glad
+  stb
 )
 
 target_include_directories(learnopengl PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/lib")
@@ -43,6 +55,7 @@ set(1.getting_started
   3.6.shaders_exercise3
   4.1.textures
   4.2.textures_combined
+  4.3.textures_exercise1
   4.4.textures_exercise2
   4.5.textures_exercise3
   4.6.textures_exercise4
@@ -148,6 +161,7 @@ foreach(CHAPTER ${CHAPTERS})
       target_link_libraries(${NAME} PRIVATE
         glfw
         glad
+        stb
         learnopengl
       )
       target_compile_features(${NAME} PUBLIC cxx_std_17)
