@@ -5,6 +5,7 @@ project("LearnOpenGL" VERSION 1.0 LANGUAGES CXX)
 include(cmake/FetchGlad.cmake)
 include(cmake/FetchGlfw.cmake)
 include(cmake/FetchStb.cmake)
+include(cmake/FetchGlm.cmake)
 
 add_library(learnopengl STATIC
   "lib/learnopengl/shader.hpp"
@@ -25,6 +26,7 @@ target_link_libraries(learnopengl PRIVATE
   glfw
   glad
   stb
+  glm
 )
 
 target_include_directories(learnopengl PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/lib")
@@ -162,6 +164,7 @@ foreach(CHAPTER ${CHAPTERS})
         glfw
         glad
         stb
+        glm
         learnopengl
       )
       target_compile_features(${NAME} PUBLIC cxx_std_17)
