@@ -1,4 +1,4 @@
-// https://learnopengl.com/Getting-started/Textures
+// https://learnopengl.com/Getting-started/Coordinate-Systems
 
 #include <learnopengl/window.hpp>
 #include <learnopengl/shader.hpp>
@@ -48,7 +48,7 @@ int main(int argc, char** argv)
         0.5f, 0.5f, 0.0f,     1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
         0.5f, -0.5f, 0.0f,    0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
         -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-        -0.5f, 0.5f, 0.0f,    1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
+        -0.5f, 0.5f, 0.0f,    1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
     };
 
     unsigned int indices[] = {
@@ -125,6 +125,7 @@ int main(int argc, char** argv)
             // Model Matrix : Transform from Local Space to World Space
             glm::mat4 model = glm::mat4(1.0f);
             // Make the plan rotate around z axis
+            model = glm::scale(model, glm::vec3(1.0f, 2.0f, 2.0f));
             //model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
 
             // View Matrix : Transform World Space to View Space

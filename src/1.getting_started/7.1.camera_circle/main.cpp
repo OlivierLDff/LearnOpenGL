@@ -1,4 +1,4 @@
-// https://learnopengl.com/Getting-started/Coordinate-Systems
+// https://learnopengl.com/Getting-started/Camera
 
 #include <learnopengl/window.hpp>
 #include <learnopengl/shader.hpp>
@@ -88,6 +88,17 @@ int main(int argc, char** argv)
     };
     // clang-format on
 
+    glm::vec3 cubePositions[] = {glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(2.0f, 5.0f, -15.0f),
+        glm::vec3(-1.5f, -2.2f, -2.5f),
+        glm::vec3(-3.8f, -2.0f, -12.3f),
+        glm::vec3(2.4f, -0.4f, -3.5f),
+        glm::vec3(-1.7f, 3.0f, -7.5f),
+        glm::vec3(1.3f, -2.0f, -2.5f),
+        glm::vec3(1.5f, 2.0f, -2.5f),
+        glm::vec3(1.5f, 0.2f, -1.5f),
+        glm::vec3(-1.3f, 1.0f, -1.5f)};
+
     // VAO: Vertex Array Object
     // It's a list of vertex attribute pointer
     // A vertex attribute pointer reference and describe a VBO
@@ -117,6 +128,25 @@ int main(int argc, char** argv)
     // Unbind our VAO
     glBindVertexArray(0);
 
+    // Enable fragment depth testing
+    glEnable(GL_DEPTH_TEST);
+
+    // Create camera local coordinate system following Gram–Schmidt process https://en.wikipedia.org/wiki/Gram%E2%80%93Schmidt_process
+    // Create a look at matrix
+    {
+        // World Position of the camera
+        glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+        // Make the camera point to the origin
+        glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+        glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
+
+        // Get the right by doing cross product from up and cameraDirection
+        glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+        glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
+
+        glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
+    }
+
     // Main window render loop
     while(!glfwWindowShouldClose(window))
     {
@@ -125,7 +155,7 @@ int main(int argc, char** argv)
 
         // Render
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         shaderProgram.use();
 
@@ -140,30 +170,36 @@ int main(int argc, char** argv)
 
         glBindVertexArray(VAO);
 
+        const float radius = std::fabs(std::cosf(float(glfwGetTime()))) * 10.f + 2;
+        float camX = std::sinf(float(glfwGetTime())) * radius;
+        float camZ = std::cosf(float(glfwGetTime())) * radius;
+        glm::mat4 view;
+        view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+
+        // Project from View Space (3D) to Clip Space (2D)
+        glm::mat4 projection;
+        int width, height;
+        glfwGetWindowSize(window, &width, &height);
+        projection = glm::perspective(glm::radians(45.0f), float(width) / float(height), 0.1f, 100.0f);
+
+        shaderProgram.setMat4("view", glm::value_ptr(view));
+        shaderProgram.setMat4("projection", glm::value_ptr(projection));
+
+        int i = 0;
+        for(const auto& position: cubePositions)
         {
             // Model Matrix : Transform from Local Space to World Space
             glm::mat4 model = glm::mat4(1.0f);
-            model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
-
-            // View Matrix : Transform World Space to View Space
-            // Camera start at 0, 0, 0 and we move the whole world to be seen from the camera
-            glm::mat4 view = glm::mat4(1.0f);
-            // note that we're translating the scene in the reverse direction of where we want to move
-            view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-            view = glm::rotate(view, glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-            view = glm::rotate(view, glm::radians(-10.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-
-            // Project from View Space (3D) to Clip Space (2D)
-            glm::mat4 projection;
-            int width, height;
-            glfwGetWindowSize(window, &width, &height);
-            projection = glm::perspective(glm::radians(45.0f), float(width) / float(height), 0.1f, 100.0f);
+            model = glm::translate(model, position);
+            float angle = 20.0f * i;
+            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+            //model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
 
             shaderProgram.setMat4("model", glm::value_ptr(model));
-            shaderProgram.setMat4("view", glm::value_ptr(view));
-            shaderProgram.setMat4("projection", glm::value_ptr(projection));
+
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            ++i;
         }
-        glDrawArrays(GL_TRIANGLES, 0, 36);
 
         // Show rendered buffer in screen
         glfwPollEvents();

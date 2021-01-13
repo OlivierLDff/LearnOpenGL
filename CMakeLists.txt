@@ -16,6 +16,8 @@ add_library(learnopengl STATIC
   "lib/learnopengl/fpscounter.cpp"
   "lib/learnopengl/texture.hpp"
   "lib/learnopengl/texture.cpp"
+  "lib/learnopengl/camera.hpp"
+  "lib/learnopengl/camera.cpp"
   "lib/learnopengl/window.hpp"
   "lib/learnopengl/window.cpp"
   "lib/learnopengl/stb_image.cpp"
@@ -71,6 +73,8 @@ set(1.getting_started
   7.2.camera_keyboard_dt
   7.3.camera_mouse_zoom
   7.4.camera_class
+  7.5.camera_exercice1
+  7.6.camera_exercice2
 )
 
 set(2.lighting
