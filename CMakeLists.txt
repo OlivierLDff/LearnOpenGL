@@ -73,14 +73,17 @@ set(1.getting_started
   7.2.camera_keyboard_dt
   7.3.camera_mouse_zoom
   7.4.camera_class
-  7.5.camera_exercice1
-  7.6.camera_exercice2
 )
 
 set(2.lighting
   1.colors
   2.1.basic_lighting_diffuse
   2.2.basic_lighting_specular
+  2.3.basic_lighting_specular_repeat_box
+  2.4.basic_lighting_specular_view_space
+  2.5.basic_lighting_specular_gouraud
+  2.6.basic_lighting_specular_texture
+  2.7.basic_lighting_specular_light_from_view
   3.1.materials
   3.2.materials_exercise1
   4.1.lighting_maps_diffuse_map
