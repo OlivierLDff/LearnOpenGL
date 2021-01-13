@@ -226,8 +226,8 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Update uniform color
-        const auto timeValue = glfwGetTime();
-        const float greenValue = (std::sin(timeValue) / 2.0f) + 0.5f;
+        const auto timeValue = float(glfwGetTime());
+        const float greenValue = (std::sinf(timeValue) / 2.0f) + 0.5f;
         const int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
         glUseProgram(shaderProgram);
         glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);

@@ -1,20 +1,20 @@
 // https://learnopengl.com/Getting-started/Camera
 
-#include <iostream>
 #include <learnopengl/window.hpp>
 #include <learnopengl/shader.hpp>
-#include <learnopengl/texture.hpp>
 #include <learnopengl/camera.hpp>
+#include <learnopengl/cameracontroller.hpp>
 #include <learnopengl/fpscounter.hpp>
+#include <learnopengl/texture.hpp>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 learnopengl::Camera camera;
+learnopengl::CameraController cameraController(&camera);
 
 void processInput(GLFWwindow* window)
 {
@@ -23,106 +23,17 @@ void processInput(GLFWwindow* window)
         glfwSetWindowShouldClose(window, true);
     }
 
-    static float deltaTime = 0.0f; // Time between current frame and last frame
-    static float lastFrame = 0.0f; // Time of last frame
-
-    const float currentFrame = float(glfwGetTime());
-    deltaTime = currentFrame - lastFrame;
-    lastFrame = currentFrame;
-    const float cameraSpeed = 2.5f * deltaTime;
-
-    if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.move(learnopengl::Camera::Movement::Forward, deltaTime);
-    if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.move(learnopengl::Camera::Movement::Backward, deltaTime);
-    if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.move(learnopengl::Camera::Movement::Left, deltaTime);
-    if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.move(learnopengl::Camera::Movement::Right, deltaTime);
+    cameraController.processInput(window);
 }
-
-float lastX = 0;
-float lastY = 0;
-bool firstMouse = true;
-bool middleMousePressed = false;
-
-enum class MouseMode
-{
-    None,
-    Orbit,
-    Pan,
-    OrbitCenter,
-    Zoom
-};
-MouseMode mousePressed = MouseMode::None;
 
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
 {
-    if(button == GLFW_MOUSE_BUTTON_RIGHT || button == GLFW_MOUSE_BUTTON_MIDDLE)
-    {
-        if(action == GLFW_PRESS)
-        {
-            if(mousePressed == MouseMode::None)
-            {
-                firstMouse = true;
-                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-                if(button == GLFW_MOUSE_BUTTON_RIGHT)
-                {
-                    mousePressed = MouseMode::Orbit;
-                }
-                else if(button == GLFW_MOUSE_BUTTON_MIDDLE)
-                {
-                    if(mods & GLFW_MOD_SHIFT)
-                        mousePressed = MouseMode::Pan;
-                    else if(mods & GLFW_MOD_CONTROL)
-                        mousePressed = MouseMode::Zoom;
-                    else
-                        mousePressed = MouseMode::OrbitCenter;
-                }
-            }
-        }
-        else if(action == GLFW_RELEASE)
-        {
-            if((mousePressed == MouseMode::Orbit && button == GLFW_MOUSE_BUTTON_RIGHT) ||
-                ((mousePressed == MouseMode::Pan || mousePressed == MouseMode::Zoom || mousePressed == MouseMode::OrbitCenter) &&
-                    button == GLFW_MOUSE_BUTTON_MIDDLE))
-            {
-                mousePressed = MouseMode::None;
-                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-            }
-        }
-    }
+    cameraController.mouseButtonCallback(window, button, action, mods);
 }
 
-void mouseMoveCallback(GLFWwindow* window, double xpos, double ypos)
-{
-    if(mousePressed == MouseMode::None)
-        return;
+void mouseMoveCallback(GLFWwindow* window, double xpos, double ypos) { cameraController.mouseMoveCallback(float(xpos), float(ypos)); }
 
-    if(firstMouse)
-    {
-        lastX = float(xpos);
-        lastY = float(ypos);
-        firstMouse = false;
-    }
-
-    float xoffset = float(xpos) - lastX;
-    float yoffset = lastY - float(ypos);
-    lastX = float(xpos);
-    lastY = float(ypos);
-
-    if(mousePressed == MouseMode::Orbit)
-        camera.orbit(xoffset, yoffset);
-    else if(mousePressed == MouseMode::Pan)
-        camera.pan(xoffset, yoffset);
-    else if(mousePressed == MouseMode::Zoom)
-        camera.zoom(yoffset);
-    else if(mousePressed == MouseMode::OrbitCenter)
-        camera.orbitCenter(xoffset, yoffset);
-}
-
-void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) { camera.zoomFov(float(yoffset)); }
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) { cameraController.scrollCallback(float(yoffset)); }
 
 int main(int argc, char** argv)
 {

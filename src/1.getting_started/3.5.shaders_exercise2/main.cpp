@@ -200,8 +200,8 @@ int main(int argc, char** argv)
         glClear(GL_COLOR_BUFFER_BIT);
 
         shaderProgram.use();
-        const auto timeValue = glfwGetTime();
-        const float offset = (std::sin(timeValue) / 2.0f);
+        const auto timeValue = float(glfwGetTime());
+        const float offset = (std::sinf(timeValue) / 2.0f);
         shaderProgram.setFloat("horizontalOffset", offset);
 
         // And draw the triangle with updated color
