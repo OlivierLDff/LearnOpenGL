@@ -5,10 +5,10 @@
 
 namespace learnopengl {
 
-class Material
+class PhongMaterial
 {
 public:
-    constexpr Material() = default;
+    constexpr PhongMaterial() = default;
 
 public:
     [[nodiscard]] constexpr const glm::vec3& ambient() const { return _ambient; }

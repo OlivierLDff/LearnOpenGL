@@ -1,5 +1,5 @@
 #include <learnopengl/shader.hpp>
-#include <learnopengl/material.hpp>
+#include <learnopengl/PhongMaterial.hpp>
 #include <learnopengl/pointlight.hpp>
 #include <glad/glad.h>
 
@@ -135,7 +135,7 @@ void Shader::setVec3(const std::string& name, const float& x, const float& y, co
     glUniform3f(glGetUniformLocation(_id, name.c_str()), x, y, z);
 }
 
-void Shader::setMaterial(const std::string& name, const Material& material) const
+void Shader::setMaterial(const std::string& name, const PhongMaterial& material) const
 {
     const std::string ambientName = name + ".ambient";
     const std::string diffuseName = name + ".diffuse";

@@ -5,8 +5,8 @@
 #include <learnopengl/camera.hpp>
 #include <learnopengl/cameracontroller.hpp>
 #include <learnopengl/fpscounter.hpp>
-#include <learnopengl/material.hpp>
-#include <learnopengl/materialcollection.hpp>
+#include <learnopengl/PhongMaterial.hpp>
+#include <learnopengl/phongmaterialcollection.hpp>
 #include <learnopengl/pointlight.hpp>
 
 #include <glad/glad.h>
@@ -148,15 +148,15 @@ int main(int argc, char** argv)
     camera.setCameraPos(glm::vec3(2.2f, 1.f, 6.f));
     camera.setCameraFront(glm::normalize(glm::vec3(0.f, 0.f, -1.f)));
 
-    std::vector<learnopengl::Material> materials = {
-        learnopengl::MaterialCollection::emerald(),
-        learnopengl::MaterialCollection::pearl(),
-        learnopengl::MaterialCollection::bronze(),
-        learnopengl::MaterialCollection::gold(),
-        learnopengl::MaterialCollection::cyanPlastic(),
-        learnopengl::MaterialCollection::redPlastic(),
-        learnopengl::MaterialCollection::greenRubber(),
-        learnopengl::MaterialCollection::yellowRubber(),
+    std::vector<learnopengl::PhongMaterial> materials = {
+        learnopengl::PhongMaterialCollection::emerald(),
+        learnopengl::PhongMaterialCollection::pearl(),
+        learnopengl::PhongMaterialCollection::bronze(),
+        learnopengl::PhongMaterialCollection::gold(),
+        learnopengl::PhongMaterialCollection::cyanPlastic(),
+        learnopengl::PhongMaterialCollection::redPlastic(),
+        learnopengl::PhongMaterialCollection::greenRubber(),
+        learnopengl::PhongMaterialCollection::yellowRubber(),
     };
 
     learnopengl::PointLight pointLight1;
