@@ -5,6 +5,9 @@
 
 namespace learnopengl {
 
+class Material;
+class PointLight;
+
 class Shader
 {
 public:
@@ -21,6 +24,8 @@ public:
     void setMat4(const std::string& name, const float* values) const;
     void setMat3(const std::string& name, const float* values) const;
     void setVec3(const std::string& name, const float& x, const float& y, const float& z) const;
+    void setMaterial(const std::string& name, const Material& material) const;
+    void setPointLight(const std::string& name, const PointLight& pointLight) const;
 
 private:
     // the program ID

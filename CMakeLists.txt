@@ -20,6 +20,8 @@ add_library(learnopengl STATIC
   "lib/learnopengl/camera.cpp"
   "lib/learnopengl/cameracontroller.hpp"
   "lib/learnopengl/cameracontroller.cpp"
+  "lib/learnopengl/material.hpp"
+  "lib/learnopengl/pointlight.hpp"
   "lib/learnopengl/window.hpp"
   "lib/learnopengl/window.cpp"
   "lib/learnopengl/stb_image.cpp"

@@ -1,4 +1,6 @@
 #include <learnopengl/shader.hpp>
+#include <learnopengl/material.hpp>
+#include <learnopengl/pointlight.hpp>
 #include <glad/glad.h>
 
 #include <fstream>
@@ -132,4 +134,31 @@ void Shader::setVec3(const std::string& name, const float& x, const float& y, co
 {
     glUniform3f(glGetUniformLocation(_id, name.c_str()), x, y, z);
 }
+
+void Shader::setMaterial(const std::string& name, const Material& material) const
+{
+    const std::string ambientName = name + ".ambient";
+    const std::string diffuseName = name + ".diffuse";
+    const std::string specularName = name + ".specular";
+    const std::string shininessName = name + ".shininess";
+
+    setVec3(ambientName, material.ambient().x, material.ambient().x, material.ambient().x);
+    setVec3(diffuseName, material.diffuse().x, material.diffuse().y, material.diffuse().z);
+    setVec3(specularName, material.specular().x, material.specular().y, material.specular().z);
+    setFloat(shininessName, material.shininess());
+}
+
+void Shader::setPointLight(const std::string& name, const PointLight& pointLight) const
+{
+    const std::string ambientName = name + ".ambient";
+    const std::string diffuseName = name + ".diffuse";
+    const std::string specularName = name + ".specular";
+    const std::string positionName = name + ".position";
+
+    setVec3(ambientName, pointLight.ambient().x, pointLight.ambient().x, pointLight.ambient().x);
+    setVec3(diffuseName, pointLight.diffuse().x, pointLight.diffuse().y, pointLight.diffuse().z);
+    setVec3(specularName, pointLight.specular().x, pointLight.specular().y, pointLight.specular().z);
+    setVec3(positionName, pointLight.position().x, pointLight.position().y, pointLight.position().z);
+}
+
 }
