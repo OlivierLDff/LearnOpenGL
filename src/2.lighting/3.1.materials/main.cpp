@@ -5,7 +5,7 @@
 #include <learnopengl/camera.hpp>
 #include <learnopengl/cameracontroller.hpp>
 #include <learnopengl/fpscounter.hpp>
-#include <learnopengl/PhongMaterial.hpp>
+#include <learnopengl/phongmaterial.hpp>
 #include <learnopengl/phongmaterialcollection.hpp>
 #include <learnopengl/pointlight.hpp>
 
@@ -209,7 +209,7 @@ int main(int argc, char** argv)
                 glm::mat3 normalMatrix = glm::mat3(glm::inverseTranspose(glm::mat3(modelView)));
                 shaderProgram.setMat3("normalMatrix", glm::value_ptr(normalMatrix));
 
-                shaderProgram.setMaterial("material", material);
+                shaderProgram.setPhongMaterial("material", material);
                 shaderProgram.setPointLight("light", pointLight);
 
                 glBindVertexArray(VAO);

@@ -1,5 +1,5 @@
-#ifndef __LEARNOPENGL_MATERIAL_HPP__
-#define __LEARNOPENGL_MATERIAL_HPP__
+#ifndef __LEARNOPENGL_PHONG_MATERIAL_HPP__
+#define __LEARNOPENGL_PHONG_MATERIAL_HPP__
 
 #include <glm/vec3.hpp>
 

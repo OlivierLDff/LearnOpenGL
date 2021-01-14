@@ -22,6 +22,7 @@ add_library(learnopengl STATIC
   "lib/learnopengl/cameracontroller.cpp"
   "lib/learnopengl/phongmaterial.hpp"
   "lib/learnopengl/phongmaterialcollection.hpp"
+  "lib/learnopengl/diffusespecularmaterial.hpp"
   "lib/learnopengl/pointlight.hpp"
   "lib/learnopengl/window.hpp"
   "lib/learnopengl/window.cpp"
@@ -93,6 +94,7 @@ set(2.lighting
   3.2.materials_exercise1
   4.1.lighting_maps_diffuse_map
   4.2.lighting_maps_specular_map
+  4.3.lighting_maps_exercise3
   4.4.lighting_maps_exercise4
   5.1.light_casters_directional
   5.2.light_casters_point

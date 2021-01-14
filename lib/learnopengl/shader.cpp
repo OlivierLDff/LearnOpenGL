@@ -1,5 +1,6 @@
 #include <learnopengl/shader.hpp>
-#include <learnopengl/PhongMaterial.hpp>
+#include <learnopengl/phongmaterial.hpp>
+#include <learnopengl/diffusespecularmaterial.hpp>
 #include <learnopengl/pointlight.hpp>
 #include <glad/glad.h>
 
@@ -135,7 +136,7 @@ void Shader::setVec3(const std::string& name, const float& x, const float& y, co
     glUniform3f(glGetUniformLocation(_id, name.c_str()), x, y, z);
 }
 
-void Shader::setMaterial(const std::string& name, const PhongMaterial& material) const
+void Shader::setPhongMaterial(const std::string& name, const PhongMaterial& material) const
 {
     const std::string ambientName = name + ".ambient";
     const std::string diffuseName = name + ".diffuse";
@@ -145,6 +146,17 @@ void Shader::setMaterial(const std::string& name, const PhongMaterial& material)
     setVec3(ambientName, material.ambient().x, material.ambient().x, material.ambient().x);
     setVec3(diffuseName, material.diffuse().x, material.diffuse().y, material.diffuse().z);
     setVec3(specularName, material.specular().x, material.specular().y, material.specular().z);
+    setFloat(shininessName, material.shininess());
+}
+
+void Shader::setDiffuseSpecularMaterial(const std::string& name, const DiffuseSpecularMaterial& material) const
+{
+    const std::string diffuseName = name + ".diffuse";
+    const std::string specularName = name + ".specular";
+    const std::string shininessName = name + ".shininess";
+
+    setInt(diffuseName, material.diffuseTextureUnit());
+    setInt(specularName, material.specularTextureUnit());
     setFloat(shininessName, material.shininess());
 }
 

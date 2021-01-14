@@ -5,9 +5,9 @@
 #include <learnopengl/camera.hpp>
 #include <learnopengl/cameracontroller.hpp>
 #include <learnopengl/fpscounter.hpp>
-#include <learnopengl/phongmaterial.hpp>
-#include <learnopengl/phongmaterialcollection.hpp>
+#include <learnopengl/diffusespecularmaterial.hpp>
 #include <learnopengl/pointlight.hpp>
+#include <learnopengl/texture.hpp>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -54,54 +54,56 @@ int main(int argc, char** argv)
     // SHADER PROGRAM
     auto shaderProgram = learnopengl::Shader("shader.vs", "shader.fs");
     auto lightShaderProgram = learnopengl::Shader("light.vs", "light.fs");
+    auto diffuseTexture = learnopengl::Texture("/resources/textures/container2.png");
+    auto specularTexture = learnopengl::Texture("/resources/textures/lighting_maps_specular_color.png");
 
     // VERTEX DATA
 
     // Vertices of triangle shape in 3d. (x, y, z)
     // clang-format off
     float vertices[] = {
-        // Coordinates       // Normal
-        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
-        0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
-        0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
-        0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
-        -0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
-        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+        // positions          // normals           // texture coords
+        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
+        0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f,
+        0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f,
+        0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f,
+        -0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
 
-        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-        0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-        0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-        0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-        -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+        0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+        0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+        0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+        -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
 
-        -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
-        -0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
-        -0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
-        -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
+        -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+        -0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+        -0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+        -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
 
-        0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
-        0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
-        0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
-        0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
-        0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
-        0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
+        0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+        0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+        0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+        0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+        0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+        0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
 
-        -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
-        0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
-        0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
-        0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
-        -0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f,
+        0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f,
+        0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+        0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+        -0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f,
 
-        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-        0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-        0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
-        0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
-        -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
-        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f
+        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+        0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+        0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+        0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+        -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f
     };
     // clang-format on
 
@@ -121,10 +123,12 @@ int main(int argc, char** argv)
     // Copy our data to the buffer
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(0 * sizeof(float)));
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     // Unbind our VBO
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -138,28 +142,20 @@ int main(int argc, char** argv)
         // we only need to bind to the VBO, the container's VBO's data already contains the data.
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         // set the vertex attribute
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
     }
 
     // Enable fragment depth testing
     glEnable(GL_DEPTH_TEST);
 
-    camera.setCameraPos(glm::vec3(2.2f, 1.f, 6.f));
-    camera.setCameraFront(glm::normalize(glm::vec3(0.f, 0.f, -1.f)));
-
-    std::vector<learnopengl::PhongMaterial> materials = {
-        learnopengl::PhongMaterialCollection::emerald(),
-        learnopengl::PhongMaterialCollection::pearl(),
-        learnopengl::PhongMaterialCollection::bronze(),
-        learnopengl::PhongMaterialCollection::gold(),
-        learnopengl::PhongMaterialCollection::cyanPlastic(),
-        learnopengl::PhongMaterialCollection::redPlastic(),
-        learnopengl::PhongMaterialCollection::greenRubber(),
-        learnopengl::PhongMaterialCollection::yellowRubber(),
-    };
+    camera.setCameraPos(glm::vec3(2.f, 2.f, 2.f));
+    camera.setCameraFront(glm::normalize(glm::vec3(-1.f, -1.f, -1.f)));
 
     learnopengl::PointLight pointLight;
+    pointLight.setAmbient(glm::vec3(0.1f));
+    pointLight.setDiffuse(glm::vec3(0.5f));
+    learnopengl::DiffuseSpecularMaterial diffuseSpecularMaterial;
 
     // Main window render loop
     while(!glfwWindowShouldClose(window))
@@ -172,16 +168,7 @@ int main(int argc, char** argv)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         const float timeAsRad = glm::radians(float(glfwGetTime()) * 100.f);
-        pointLight.setPosition(glm::vec3(2.25, 1, 4));
-
-        glm::vec3 lightColor;
-        lightColor.x = std::sinf(float(glfwGetTime()) * 2.0f);
-        lightColor.y = std::sinf(float(glfwGetTime()) * 0.7f);
-        lightColor.z = std::sinf(float(glfwGetTime()) * 1.3f);
-
-        pointLight.setDiffuse(lightColor * glm::vec3(0.5f));
-        pointLight.setAmbient(pointLight.diffuse() * glm::vec3(0.2f));
-        pointLight.setSpecular(glm::vec3(glm::length(lightColor)));
+        pointLight.setPosition(glm::vec3(std::cosf(timeAsRad), std::sinf(timeAsRad * 2.f), std::sinf(timeAsRad)) * 1.1f);
 
         shaderProgram.use();
 
@@ -195,44 +182,32 @@ int main(int argc, char** argv)
 
         shaderProgram.setMat4("projection", glm::value_ptr(projection));
 
+        // Use diffuse texture with unit 0
+        diffuseTexture.use(0);
+        specularTexture.use(1);
+        diffuseSpecularMaterial.setDiffuseTextureUnit(0);
+        diffuseSpecularMaterial.setSpecularTextureUnit(1);
+
+        // NormalMatrix/LightPosition is in modelView space
         {
-            shaderProgram.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+            auto viewPointLight = pointLight;
+            viewPointLight.setPosition(view * glm::vec4(pointLight.position(), 1));
+            shaderProgram.setPointLight("light", viewPointLight);
 
-            int row = 0;
-            int column = 0;
-            const int maxColumns = 4;
+            glm::mat4 model = glm::mat4(1.0f);
+            const glm::mat4 modelView = view * model;
+            shaderProgram.setMat4("modelView", glm::value_ptr(modelView));
 
-            for(const auto& material: materials)
-            {
-                auto pointLightView = pointLight;
-                pointLightView.setPosition(view * glm::vec4(pointLightView.position(), 1));
+            glm::mat3 normalMatrix = glm::mat3(glm::inverseTranspose(glm::mat3(modelView)));
+            shaderProgram.setMat3("normalMatrix", glm::value_ptr(normalMatrix));
 
-                glm::mat4 model = glm::mat4(1.0f);
-                model = glm::translate(model, glm::vec3(float(column) * 1.5f, float(row) * 1.5f, 0.f));
+            shaderProgram.setDiffuseSpecularMaterial("material", diffuseSpecularMaterial);
 
-                const glm::mat4 modelView = view * model;
-                shaderProgram.setMat4("modelView", glm::value_ptr(modelView));
-
-                glm::mat3 normalMatrix = glm::mat3(glm::inverseTranspose(glm::mat3(modelView)));
-                shaderProgram.setMat3("normalMatrix", glm::value_ptr(normalMatrix));
-
-                shaderProgram.setPhongMaterial("material", material);
-                shaderProgram.setPointLight("light", pointLightView);
-
-                glBindVertexArray(VAO);
-                glDrawArrays(GL_TRIANGLES, 0, 36);
-
-                ++column;
-                if(column >= maxColumns)
-                {
-                    ++row;
-                    column = 0;
-                }
-            }
+            glBindVertexArray(VAO);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 
         lightShaderProgram.use();
-
         {
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, pointLight.position());
@@ -241,7 +216,6 @@ int main(int argc, char** argv)
             lightShaderProgram.setMat4("view", glm::value_ptr(view));
             lightShaderProgram.setMat4("projection", glm::value_ptr(projection));
             lightShaderProgram.setMat4("model", glm::value_ptr(model));
-            lightShaderProgram.setVec3("color", lightColor.r, lightColor.g, lightColor.b);
 
             glBindVertexArray(lightVAO);
             glDrawArrays(GL_TRIANGLES, 0, 36);

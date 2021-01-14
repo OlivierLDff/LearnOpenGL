@@ -27,12 +27,13 @@ public:
     // use/activate the texture
     void use(int textureUnit = 0);
 
-    [[nodiscard]] unsigned id() const { return _id; }
+    [[nodiscard]] unsigned int id() const { return _id; }
 
 private:
     // the program ID
     unsigned int _id = 0;
 };
+
 }
 
 #endif
