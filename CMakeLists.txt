@@ -103,7 +103,8 @@ set(2.lighting
   5.2.light_casters_point
   5.3.light_casters_spot
   5.4.light_casters_spot_soft
-  6.multiple_lights
+  6.1.multiple_lights
+  6.2.multiple_lights_desert
 )
 
 set(3.model_loading

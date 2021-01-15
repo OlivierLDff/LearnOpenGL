@@ -29,9 +29,9 @@ public:
     void setVec3(const std::string& name, const float& x, const float& y, const float& z) const;
     void setPhongMaterial(const std::string& name, const PhongMaterial& material) const;
     void setDiffuseSpecularMaterial(const std::string& name, const DiffuseSpecularMaterial& material) const;
-    void setPointLight(const std::string& name, const PointLight& pointLight) const;
-    void setDirectionLight(const std::string& name, const DirectionLight& directionLight) const;
-    void setSpotLight(const std::string& name, const SpotLight& spotLight) const;
+    void setPointLight(const std::string& name, const PointLight& light) const;
+    void setDirectionLight(const std::string& name, const DirectionLight& light) const;
+    void setSpotLight(const std::string& name, const SpotLight& light) const;
 
 private:
     // the program ID

@@ -32,6 +32,16 @@ public:
     [[nodiscard]] constexpr float outerCutOff() const { return _outerCutOff; }
     void constexpr setOuterCutOff(float outerCutOff) { _outerCutOff = outerCutOff; }
 
+    [[nodiscard]] constexpr float attenuationConstant() const { return _attenuationConstant; }
+    [[nodiscard]] constexpr float attenuationLinear() const { return _attenuationLinear; }
+    [[nodiscard]] constexpr float attenuationQuadratic() const { return _attenuationQuadratic; }
+    constexpr void setAttenuation(float constant, float linear, float quadratic)
+    {
+        _attenuationConstant = constant;
+        _attenuationLinear = linear;
+        _attenuationQuadratic = quadratic;
+    }
+
 private:
     glm::vec3 _ambient = glm::vec3(1.f);
     glm::vec3 _diffuse = glm::vec3(1.f);
@@ -43,6 +53,10 @@ private:
     // the cutoff angle that specifies the spotlight's radius. Everything outside this angle is not lit by the spotlight.
     float _cutOff = 0.f;
     float _outerCutOff = 0.f;
+
+    float _attenuationConstant = 1.f;
+    float _attenuationLinear = 0.045f;
+    float _attenuationQuadratic = 0.0075f;
 };
 
 }

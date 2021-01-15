@@ -162,41 +162,41 @@ void Shader::setDiffuseSpecularMaterial(const std::string& name, const DiffuseSp
     setFloat(shininessName, material.shininess());
 }
 
-void Shader::setPointLight(const std::string& name, const PointLight& pointLight) const
+void Shader::setPointLight(const std::string& name, const PointLight& light) const
 {
     const std::string ambientName = name + ".ambient";
     const std::string diffuseName = name + ".diffuse";
     const std::string specularName = name + ".specular";
     const std::string positionName = name + ".position";
 
-    setVec3(ambientName, pointLight.ambient().x, pointLight.ambient().x, pointLight.ambient().x);
-    setVec3(diffuseName, pointLight.diffuse().x, pointLight.diffuse().y, pointLight.diffuse().z);
-    setVec3(specularName, pointLight.specular().x, pointLight.specular().y, pointLight.specular().z);
-    setVec3(positionName, pointLight.position().x, pointLight.position().y, pointLight.position().z);
+    setVec3(ambientName, light.ambient().x, light.ambient().x, light.ambient().x);
+    setVec3(diffuseName, light.diffuse().x, light.diffuse().y, light.diffuse().z);
+    setVec3(specularName, light.specular().x, light.specular().y, light.specular().z);
+    setVec3(positionName, light.position().x, light.position().y, light.position().z);
 
     const std::string constantName = name + ".constant";
     const std::string linearName = name + ".linear";
     const std::string quadraticName = name + ".quadratic";
 
-    setFloat(constantName, pointLight.attenuationConstant());
-    setFloat(linearName, pointLight.attenuationLinear());
-    setFloat(quadraticName, pointLight.attenuationQuadratic());
+    setFloat(constantName, light.attenuationConstant());
+    setFloat(linearName, light.attenuationLinear());
+    setFloat(quadraticName, light.attenuationQuadratic());
 }
 
-void Shader::setDirectionLight(const std::string& name, const DirectionLight& directionLight) const
+void Shader::setDirectionLight(const std::string& name, const DirectionLight& light) const
 {
     const std::string ambientName = name + ".ambient";
     const std::string diffuseName = name + ".diffuse";
     const std::string specularName = name + ".specular";
     const std::string directionName = name + ".direction";
 
-    setVec3(ambientName, directionLight.ambient().x, directionLight.ambient().x, directionLight.ambient().x);
-    setVec3(diffuseName, directionLight.diffuse().x, directionLight.diffuse().y, directionLight.diffuse().z);
-    setVec3(specularName, directionLight.specular().x, directionLight.specular().y, directionLight.specular().z);
-    setVec3(directionName, directionLight.direction().x, directionLight.direction().y, directionLight.direction().z);
+    setVec3(ambientName, light.ambient().x, light.ambient().x, light.ambient().x);
+    setVec3(diffuseName, light.diffuse().x, light.diffuse().y, light.diffuse().z);
+    setVec3(specularName, light.specular().x, light.specular().y, light.specular().z);
+    setVec3(directionName, light.direction().x, light.direction().y, light.direction().z);
 }
 
-void Shader::setSpotLight(const std::string& name, const SpotLight& spotLight) const
+void Shader::setSpotLight(const std::string& name, const SpotLight& light) const
 {
     const std::string ambientName = name + ".ambient";
     const std::string diffuseName = name + ".diffuse";
@@ -205,14 +205,21 @@ void Shader::setSpotLight(const std::string& name, const SpotLight& spotLight) c
     const std::string positionName = name + ".position";
     const std::string cutOffName = name + ".cutOff";
     const std::string outerCutOffName = name + ".outerCutOff";
+    const std::string constantName = name + ".constant";
+    const std::string linearName = name + ".linear";
+    const std::string quadraticName = name + ".quadratic";
 
-    setVec3(ambientName, spotLight.ambient().x, spotLight.ambient().x, spotLight.ambient().x);
-    setVec3(diffuseName, spotLight.diffuse().x, spotLight.diffuse().y, spotLight.diffuse().z);
-    setVec3(specularName, spotLight.specular().x, spotLight.specular().y, spotLight.specular().z);
-    setVec3(directionName, spotLight.direction().x, spotLight.direction().y, spotLight.direction().z);
-    setVec3(positionName, spotLight.position().x, spotLight.position().y, spotLight.position().z);
-    setFloat(cutOffName, spotLight.cutOff());
-    setFloat(outerCutOffName, spotLight.outerCutOff());
+    setVec3(ambientName, light.ambient().x, light.ambient().x, light.ambient().x);
+    setVec3(diffuseName, light.diffuse().x, light.diffuse().y, light.diffuse().z);
+    setVec3(specularName, light.specular().x, light.specular().y, light.specular().z);
+    setVec3(directionName, light.direction().x, light.direction().y, light.direction().z);
+    setVec3(positionName, light.position().x, light.position().y, light.position().z);
+    setFloat(cutOffName, light.cutOff());
+    setFloat(outerCutOffName, light.outerCutOff());
+
+    setFloat(constantName, light.attenuationConstant());
+    setFloat(linearName, light.attenuationLinear());
+    setFloat(quadraticName, light.attenuationQuadratic());
 }
 
 }
