@@ -8,6 +8,8 @@ namespace learnopengl {
 class PhongMaterial;
 class DiffuseSpecularMaterial;
 class PointLight;
+class DirectionLight;
+class SpotLight;
 
 class Shader
 {
@@ -28,6 +30,8 @@ public:
     void setPhongMaterial(const std::string& name, const PhongMaterial& material) const;
     void setDiffuseSpecularMaterial(const std::string& name, const DiffuseSpecularMaterial& material) const;
     void setPointLight(const std::string& name, const PointLight& pointLight) const;
+    void setDirectionLight(const std::string& name, const DirectionLight& directionLight) const;
+    void setSpotLight(const std::string& name, const SpotLight& spotLight) const;
 
 private:
     // the program ID

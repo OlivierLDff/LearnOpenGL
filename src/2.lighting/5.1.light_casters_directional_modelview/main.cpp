@@ -1,4 +1,4 @@
-// https://learnopengl.com/Lighting/Lighting-maps
+// https://learnopengl.com/Lighting/Light-casters
 
 #include <learnopengl/window.hpp>
 #include <learnopengl/shader.hpp>
@@ -6,7 +6,7 @@
 #include <learnopengl/cameracontroller.hpp>
 #include <learnopengl/fpscounter.hpp>
 #include <learnopengl/diffusespecularmaterial.hpp>
-#include <learnopengl/pointlight.hpp>
+#include <learnopengl/directionlight.hpp>
 #include <learnopengl/texture.hpp>
 
 #include <glad/glad.h>
@@ -53,8 +53,8 @@ int main(int argc, char** argv)
 
     // SHADER PROGRAM
     auto shaderProgram = learnopengl::Shader("shader.vs", "shader.fs");
-    auto lightShaderProgram = learnopengl::Shader("light.vs", "light.fs");
     auto diffuseTexture = learnopengl::Texture("/resources/textures/container2.png");
+    auto specularTexture = learnopengl::Texture("/resources/textures/container2_specular.png");
 
     // VERTEX DATA
 
@@ -106,6 +106,17 @@ int main(int argc, char** argv)
     };
     // clang-format on
 
+    glm::vec3 cubePositions[] = {glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(2.0f, 5.0f, -15.0f),
+        glm::vec3(-1.5f, -2.2f, -2.5f),
+        glm::vec3(-3.8f, -2.0f, -12.3f),
+        glm::vec3(2.4f, -0.4f, -3.5f),
+        glm::vec3(-1.7f, 3.0f, -7.5f),
+        glm::vec3(1.3f, -2.0f, -2.5f),
+        glm::vec3(1.5f, 2.0f, -2.5f),
+        glm::vec3(1.5f, 0.2f, -1.5f),
+        glm::vec3(-1.3f, 1.0f, -1.5f)};
+
     // VAO: Vertex Array Object
     // It's a list of vertex attribute pointer
     // A vertex attribute pointer reference and describe a VBO
@@ -148,12 +159,14 @@ int main(int argc, char** argv)
     // Enable fragment depth testing
     glEnable(GL_DEPTH_TEST);
 
-    camera.setCameraPos(glm::vec3(2.f, 2.f, 2.f));
-    camera.setCameraFront(glm::normalize(glm::vec3(-1.f, -1.f, -1.f)));
+    //camera.setCameraPos(glm::vec3(2.f, 2.f, 2.f));
+    //camera.setCameraFront(glm::normalize(glm::vec3(-1.f, -1.f, -1.f)));
 
-    learnopengl::PointLight pointLight;
-    pointLight.setAmbient(glm::vec3(0.1f));
-    pointLight.setDiffuse(glm::vec3(0.5f));
+    learnopengl::DirectionLight directionLight;
+    directionLight.setAmbient(glm::vec3(0.1f));
+    directionLight.setDiffuse(glm::vec3(0.5f));
+    directionLight.setDirection(glm::vec3(-0.2f, -1.0f, -0.3f));
+
     learnopengl::DiffuseSpecularMaterial diffuseSpecularMaterial;
 
     // Main window render loop
@@ -165,9 +178,6 @@ int main(int argc, char** argv)
         // Render
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        const float timeAsRad = glm::radians(float(glfwGetTime()) * 100.f);
-        pointLight.setPosition(glm::vec3(std::cosf(timeAsRad), std::sinf(timeAsRad * 2.f), std::sinf(timeAsRad)) * 1.1f);
 
         shaderProgram.use();
 
@@ -183,39 +193,31 @@ int main(int argc, char** argv)
 
         // Use diffuse texture with unit 0
         diffuseTexture.use(0);
+        specularTexture.use(1);
         diffuseSpecularMaterial.setDiffuseTextureUnit(0);
         diffuseSpecularMaterial.setSpecularTextureUnit(1);
 
+        auto viewDirectionLight = directionLight;
+        viewDirectionLight.setDirection(glm::inverseTranspose(glm::mat3(view)) * viewDirectionLight.direction());
+        shaderProgram.setDirectionLight("light", viewDirectionLight);
+        shaderProgram.setDiffuseSpecularMaterial("material", diffuseSpecularMaterial);
+
         // NormalMatrix/LightPosition is in modelView space
+        float angle = 0.f;
+        for(const auto& cube: cubePositions)
         {
-            auto viewPointLight = pointLight;
-            viewPointLight.setPosition(view * glm::vec4(pointLight.position(), 1));
-            shaderProgram.setPointLight("light", viewPointLight);
+            angle += 20.f;
 
             glm::mat4 model = glm::mat4(1.0f);
-            const glm::mat4 modelView = view * model;
+            model = glm::translate(model, cube);
+            model = glm::rotate(model, angle, glm::normalize(glm::vec3(0.1f, 0.3f, 0.4f)));
+            const auto modelView = view * model;
             shaderProgram.setMat4("modelView", glm::value_ptr(modelView));
 
-            glm::mat3 normalMatrix = glm::mat3(glm::inverseTranspose(glm::mat3(modelView)));
-            shaderProgram.setMat3("normalMatrix", glm::value_ptr(normalMatrix));
-
-            shaderProgram.setDiffuseSpecularMaterial("material", diffuseSpecularMaterial);
+            glm::mat3 normalModelViewMatrix = glm::inverseTranspose(glm::mat3(modelView));
+            shaderProgram.setMat3("normalModelViewMatrix", glm::value_ptr(normalModelViewMatrix));
 
             glBindVertexArray(VAO);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
-
-        lightShaderProgram.use();
-        {
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, pointLight.position());
-            model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
-
-            lightShaderProgram.setMat4("view", glm::value_ptr(view));
-            lightShaderProgram.setMat4("projection", glm::value_ptr(projection));
-            lightShaderProgram.setMat4("model", glm::value_ptr(model));
-
-            glBindVertexArray(lightVAO);
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 

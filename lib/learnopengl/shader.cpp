@@ -2,6 +2,8 @@
 #include <learnopengl/phongmaterial.hpp>
 #include <learnopengl/diffusespecularmaterial.hpp>
 #include <learnopengl/pointlight.hpp>
+#include <learnopengl/directionlight.hpp>
+#include <learnopengl/spotlight.hpp>
 #include <glad/glad.h>
 
 #include <fstream>
@@ -171,6 +173,46 @@ void Shader::setPointLight(const std::string& name, const PointLight& pointLight
     setVec3(diffuseName, pointLight.diffuse().x, pointLight.diffuse().y, pointLight.diffuse().z);
     setVec3(specularName, pointLight.specular().x, pointLight.specular().y, pointLight.specular().z);
     setVec3(positionName, pointLight.position().x, pointLight.position().y, pointLight.position().z);
+
+    const std::string constantName = name + ".constant";
+    const std::string linearName = name + ".linear";
+    const std::string quadraticName = name + ".quadratic";
+
+    setFloat(constantName, pointLight.attenuationConstant());
+    setFloat(linearName, pointLight.attenuationLinear());
+    setFloat(quadraticName, pointLight.attenuationQuadratic());
+}
+
+void Shader::setDirectionLight(const std::string& name, const DirectionLight& directionLight) const
+{
+    const std::string ambientName = name + ".ambient";
+    const std::string diffuseName = name + ".diffuse";
+    const std::string specularName = name + ".specular";
+    const std::string directionName = name + ".direction";
+
+    setVec3(ambientName, directionLight.ambient().x, directionLight.ambient().x, directionLight.ambient().x);
+    setVec3(diffuseName, directionLight.diffuse().x, directionLight.diffuse().y, directionLight.diffuse().z);
+    setVec3(specularName, directionLight.specular().x, directionLight.specular().y, directionLight.specular().z);
+    setVec3(directionName, directionLight.direction().x, directionLight.direction().y, directionLight.direction().z);
+}
+
+void Shader::setSpotLight(const std::string& name, const SpotLight& spotLight) const
+{
+    const std::string ambientName = name + ".ambient";
+    const std::string diffuseName = name + ".diffuse";
+    const std::string specularName = name + ".specular";
+    const std::string directionName = name + ".direction";
+    const std::string positionName = name + ".position";
+    const std::string cutOffName = name + ".cutOff";
+    const std::string outerCutOffName = name + ".outerCutOff";
+
+    setVec3(ambientName, spotLight.ambient().x, spotLight.ambient().x, spotLight.ambient().x);
+    setVec3(diffuseName, spotLight.diffuse().x, spotLight.diffuse().y, spotLight.diffuse().z);
+    setVec3(specularName, spotLight.specular().x, spotLight.specular().y, spotLight.specular().z);
+    setVec3(directionName, spotLight.direction().x, spotLight.direction().y, spotLight.direction().z);
+    setVec3(positionName, spotLight.position().x, spotLight.position().y, spotLight.position().z);
+    setFloat(cutOffName, spotLight.cutOff());
+    setFloat(outerCutOffName, spotLight.outerCutOff());
 }
 
 }

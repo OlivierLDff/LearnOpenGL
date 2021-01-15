@@ -1,4 +1,4 @@
-// https://learnopengl.com/Lighting/Materials
+// https://learnopengl.com/Lighting/Lighting-maps
 
 #include <learnopengl/window.hpp>
 #include <learnopengl/shader.hpp>

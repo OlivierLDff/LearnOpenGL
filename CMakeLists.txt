@@ -24,6 +24,8 @@ add_library(learnopengl STATIC
   "lib/learnopengl/phongmaterialcollection.hpp"
   "lib/learnopengl/diffusespecularmaterial.hpp"
   "lib/learnopengl/pointlight.hpp"
+  "lib/learnopengl/directionlight.hpp"
+  "lib/learnopengl/spotlight.hpp"
   "lib/learnopengl/window.hpp"
   "lib/learnopengl/window.cpp"
   "lib/learnopengl/stb_image.cpp"
@@ -97,6 +99,7 @@ set(2.lighting
   4.3.lighting_maps_exercise3
   4.4.lighting_maps_exercise4
   5.1.light_casters_directional
+  5.1.light_casters_directional_modelview
   5.2.light_casters_point
   5.3.light_casters_spot
   5.4.light_casters_spot_soft
