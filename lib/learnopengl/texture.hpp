@@ -1,7 +1,12 @@
 #ifndef __LEARNOPENGL_TEXTURE_HPP__
 #define __LEARNOPENGL_TEXTURE_HPP__
 
+#include <string>
+#include <memory>
+
 namespace learnopengl {
+
+class SharedTexture;
 
 class Texture
 {
@@ -18,20 +23,23 @@ public:
         };
         WrapMode wrapMode = WrapMode::Repeat;
         bool nearest = false;
+        std::string name;
     };
 
     // constructor reads and allocate the texture
-    Texture(const char* filePath, const Settings& settings = {});
+    Texture(const std::string& filePath, const Settings& settings = {});
     ~Texture();
 
     // use/activate the texture
-    void use(int textureUnit = 0);
+    void use(std::uint32_t textureUnit = 0) const;
 
-    [[nodiscard]] unsigned int id() const { return _id; }
+    [[nodiscard]] std::uint32_t id() const;
+    [[nodiscard]] std::string name() const;
 
 private:
-    // the program ID
-    unsigned int _id = 0;
+    std::shared_ptr<SharedTexture> _impl;
+
+    friend SharedTexture;
 };
 
 }

@@ -6,6 +6,7 @@ include(cmake/FetchGlad.cmake)
 include(cmake/FetchGlfw.cmake)
 include(cmake/FetchStb.cmake)
 include(cmake/FetchGlm.cmake)
+include(cmake/FetchAssimp.cmake)
 
 add_library(learnopengl STATIC
   "lib/learnopengl/shader.hpp"
@@ -28,6 +29,10 @@ add_library(learnopengl STATIC
   "lib/learnopengl/spotlight.hpp"
   "lib/learnopengl/window.hpp"
   "lib/learnopengl/window.cpp"
+  "lib/learnopengl/mesh.hpp"
+  "lib/learnopengl/mesh.cpp"
+  "lib/learnopengl/model.hpp"
+  "lib/learnopengl/model.cpp"
   "lib/learnopengl/stb_image.cpp"
 )
 target_compile_features(learnopengl PUBLIC cxx_std_20)
@@ -37,6 +42,7 @@ target_link_libraries(learnopengl PRIVATE
   glad
   stb
   glm
+  assimp
 )
 
 target_include_directories(learnopengl PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/lib")
@@ -108,7 +114,10 @@ set(2.lighting
 )
 
 set(3.model_loading
-  1.model_loading
+  1.0.model_loading_cube
+  1.1.model_loading_backpack
+  1.2.model_loading_ibm3278
+  1.3.model_loading_zelda
 )
 
 set(4.advanced_opengl
@@ -184,6 +193,7 @@ foreach(CHAPTER ${CHAPTERS})
         glad
         stb
         glm
+        assimp
         learnopengl
       )
       target_compile_features(${NAME} PUBLIC cxx_std_17)
