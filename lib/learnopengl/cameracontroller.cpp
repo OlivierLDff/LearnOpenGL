@@ -65,7 +65,7 @@ void CameraController::mouseButtonCallback(GLFWwindow* window, int button, int a
     }
 }
 
-void CameraController::mouseMoveCallback(float xpos, float ypos)
+void CameraController::mouseMoveCallback(GLFWwindow* window, float xpos, float ypos)
 {
     if(_mousePressedMode == MouseMode::None)
         return;
@@ -85,14 +85,21 @@ void CameraController::mouseMoveCallback(float xpos, float ypos)
     if(!_camera)
         return;
 
+    int width, height;
+    glfwGetWindowSize(window, &width, &height);
+
     if(_mousePressedMode == MouseMode::Orbit)
         _camera->orbit(xoffset, yoffset);
     else if(_mousePressedMode == MouseMode::Pan)
-        _camera->pan(xoffset, yoffset);
+        _camera->pan(xoffset/float(width), yoffset/float(height));
     else if(_mousePressedMode == MouseMode::Zoom)
         _camera->zoom(yoffset);
     else if(_mousePressedMode == MouseMode::OrbitCenter)
-        _camera->orbitCenter(xoffset, yoffset);
+    {
+        float deltaAngleX = (2 * glm::pi<float>() / float(width)); // a movement from left to right = 2*PI = 360 deg
+        float deltaAngleY = (glm::pi<float>() / float(height)); // a movement from top to bottom = PI = 180 deg
+        _camera->orbitCenter(-xoffset, yoffset, deltaAngleX, deltaAngleY);
+    }
 }
 
 void CameraController::scrollCallback(float offset)

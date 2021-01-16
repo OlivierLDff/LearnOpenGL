@@ -17,15 +17,12 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
 
-#include <vector>
-#include <cmath>
-
 learnopengl::Camera camera;
 learnopengl::CameraController cameraController(&camera);
 
 void processInput(GLFWwindow* window)
 {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     {
         glfwSetWindowShouldClose(window, true);
     }
@@ -38,14 +35,14 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
     cameraController.mouseButtonCallback(window, button, action, mods);
 }
 
-void mouseMoveCallback(GLFWwindow* window, double xpos, double ypos) { cameraController.mouseMoveCallback(float(xpos), float(ypos)); }
+void mouseMoveCallback(GLFWwindow* window, double xpos, double ypos) { cameraController.mouseMoveCallback(window, float(xpos), float(ypos)); }
 
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) { cameraController.scrollCallback(float(yoffset)); }
 
 int main(int argc, char** argv)
 {
     auto* window = learnopengl::createWindow();
-    if (!window)
+    if(!window)
         return -1;
 
     glfwSetCursorPosCallback(window, mouseMoveCallback);
@@ -80,7 +77,7 @@ int main(int argc, char** argv)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Main window render loop
-    while (!glfwWindowShouldClose(window))
+    while(!glfwWindowShouldClose(window))
     {
         // Process input
         processInput(window);

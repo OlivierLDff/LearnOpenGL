@@ -24,7 +24,7 @@ public:
 
     void processInput(GLFWwindow* window);
     void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
-    void mouseMoveCallback(float xpos, float ypos);
+    void mouseMoveCallback(GLFWwindow* window, float xpos, float ypos);
     void scrollCallback(float offset);
 
 private:

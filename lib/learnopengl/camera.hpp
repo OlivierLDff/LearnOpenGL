@@ -25,7 +25,7 @@ public:
 
     void move(Movement movement, float delta);
     void orbit(float xOffset, float yOffset, bool constrainPitch = true);
-    void orbitCenter(float xOffset, float yOffset, bool constrainPitch = true);
+    void orbitCenter(float xOffset, float yOffset, float deltaAngleX = 0.1f, float deltaAngleY = 0.1f);
     void pan(float xOffset, float yOffset);
     void zoom(float offset);
     void zoomFov(float offset);
@@ -41,18 +41,24 @@ public:
     const glm::vec3& cameraPos() const { return _cameraPos; }
     void setCameraPos(const glm::vec3& cameraPos) { _cameraPos = cameraPos; }
 
-    const glm::vec3& cameraFront() const { return _cameraFront; }
-    void setCameraFront(const glm::vec3& cameraFront) { _cameraFront = cameraFront; }
+    glm::vec3 cameraFront() const { return glm::normalize(_cameraCenter - _cameraPos); }
+    void setCameraFront(const glm::vec3& cameraFront)
+    {
+        const auto distanceToCenter = glm::length(_cameraCenter - _cameraPos);
+        _cameraCenter = _cameraPos + cameraFront * distanceToCenter;
+    }
+
+    glm::vec3 cameraRight() const { return glm::normalize(glm::cross(cameraFront(), _cameraUp)); }
+    glm::vec3 cameraCenter() const { return _cameraCenter; }
 
 private:
     glm::vec3 _cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-    glm::vec3 _cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+    glm::vec3 _cameraCenter = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 _cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
     float _speed = 2.5f;
 
     float _orbitSensitivity = 0.1f;
-    float _panSensitivity = 0.01f;
     float _zoomSensitivity = 0.01f;
 
     float _fov = glm::radians(45.f);

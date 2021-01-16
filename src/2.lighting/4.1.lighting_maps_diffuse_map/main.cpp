@@ -37,7 +37,7 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
     cameraController.mouseButtonCallback(window, button, action, mods);
 }
 
-void mouseMoveCallback(GLFWwindow* window, double xpos, double ypos) { cameraController.mouseMoveCallback(float(xpos), float(ypos)); }
+void mouseMoveCallback(GLFWwindow* window, double xpos, double ypos) { cameraController.mouseMoveCallback(window, float(xpos), float(ypos)); }
 
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) { cameraController.scrollCallback(float(yoffset)); }
 
