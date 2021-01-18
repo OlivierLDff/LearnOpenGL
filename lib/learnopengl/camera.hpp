@@ -51,6 +51,22 @@ public:
     glm::vec3 cameraRight() const { return glm::normalize(glm::cross(cameraFront(), _cameraUp)); }
     glm::vec3 cameraCenter() const { return _cameraCenter; }
 
+    [[nodiscard]] float near() const { return _near; }
+
+    void setNear(float near)
+    {
+        _near = near;
+        _projectionMatrixDirty = true;
+    }
+
+    [[nodiscard]] float far() const { return _far; }
+
+    void setFar(float far)
+    {
+        _far = far;
+        _projectionMatrixDirty = true;
+    }
+
 private:
     glm::vec3 _cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
     glm::vec3 _cameraCenter = glm::vec3(0.0f, 0.0f, 0.0f);

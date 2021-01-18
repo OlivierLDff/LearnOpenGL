@@ -36,7 +36,6 @@ void Camera::move(Movement movement, float delta)
     }
 
     _cameraPos += moveDelta;
-
     _viewMatrixDirty = true;
 }
 
@@ -127,7 +126,7 @@ void Camera::pan(float xOffset, float yOffset)
 
 void Camera::zoom(float offset)
 {
-     const auto newCameraPos = _cameraPos + offset * cameraFront() * _zoomSensitivity;
+    const auto newCameraPos = _cameraPos + offset * cameraFront() * _zoomSensitivity;
 
     // Avoid zoom reversing the camerapos
     if(glm::dot(_cameraCenter - _cameraPos, _cameraCenter - newCameraPos) <= 0.01f)

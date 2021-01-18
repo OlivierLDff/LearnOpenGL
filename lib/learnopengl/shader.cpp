@@ -4,6 +4,8 @@
 #include <learnopengl/pointlight.hpp>
 #include <learnopengl/directionlight.hpp>
 #include <learnopengl/spotlight.hpp>
+#include <learnopengl/fileinfo.hpp>
+
 #include <glad/glad.h>
 
 #include <fstream>
@@ -46,6 +48,9 @@ bool checkShaderProgramCompilationError(unsigned int shaderProgram)
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
 {
+    const auto absVertexPath = FileInfo(vertexPath).absolutePath();
+    const auto absFragmentPath = FileInfo(fragmentPath).absolutePath();
+
     std::string vertexCode;
     std::string fragmentCode;
     std::ifstream vShaderFile;
@@ -56,8 +61,8 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
     try
     {
         // open files
-        vShaderFile.open(vertexPath);
-        fShaderFile.open(fragmentPath);
+        vShaderFile.open(absVertexPath);
+        fShaderFile.open(absFragmentPath);
         std::stringstream vShaderStream, fShaderStream;
         // read file's buffer contents into streams
         vShaderStream << vShaderFile.rdbuf();
@@ -134,6 +139,11 @@ void Shader::setMat3(const std::string& name, const float* values) const
 void Shader::setVec3(const std::string& name, const float& x, const float& y, const float& z) const
 {
     glUniform3f(glGetUniformLocation(_id, name.c_str()), x, y, z);
+}
+
+void Shader::setVec4(const std::string& name, const float& x, const float& y, const float& z, const float& w) const
+{
+    glUniform4f(glGetUniformLocation(_id, name.c_str()), x, y, z, w);
 }
 
 void Shader::setPhongMaterial(const std::string& name, const PhongMaterial& material) const

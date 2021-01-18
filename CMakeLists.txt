@@ -31,6 +31,8 @@ add_library(learnopengl STATIC
   "lib/learnopengl/window.cpp"
   "lib/learnopengl/mesh.hpp"
   "lib/learnopengl/mesh.cpp"
+  "lib/learnopengl/gridfloor.hpp"
+  "lib/learnopengl/gridfloor.cpp"
   "lib/learnopengl/model.hpp"
   "lib/learnopengl/model.cpp"
   "lib/learnopengl/stb_image.cpp"
@@ -118,6 +120,7 @@ set(3.model_loading
   1.1.model_loading_backpack
   1.2.model_loading_ibm3278
   1.3.model_loading_zelda
+  1.4.model_floor_grid
 )
 
 set(4.advanced_opengl

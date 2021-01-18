@@ -26,6 +26,7 @@ public:
     void setMat4(const std::string& name, const float* values) const;
     void setMat3(const std::string& name, const float* values) const;
     void setVec3(const std::string& name, const float& x, const float& y, const float& z) const;
+    void setVec4(const std::string& name, const float& x, const float& y, const float& z, const float& w) const;
     void setPhongMaterial(const std::string& name, const PhongMaterial& material) const;
     void setDiffuseSpecularMaterial(const std::string& name, const DiffuseSpecularMaterial& material) const;
     void setPointLight(const std::string& name, const PointLight& light) const;
