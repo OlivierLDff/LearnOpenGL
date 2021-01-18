@@ -2,10 +2,9 @@
 
 #include <glm/gtc/epsilon.hpp>
 #include <glm/gtx/string_cast.hpp>
+#include <glm/gtc/matrix_inverse.hpp>
 
 #include <algorithm>
-#include <iostream>
-#include <glm/gtc/matrix_inverse.hpp>
 
 namespace learnopengl {
 
@@ -37,8 +36,6 @@ void Camera::move(Movement movement, float delta)
     }
 
     _cameraPos += moveDelta;
-
-    std::cout << "Pos : " << glm::to_string(_cameraPos) << std::endl;
 
     _viewMatrixDirty = true;
 }
@@ -130,7 +127,14 @@ void Camera::pan(float xOffset, float yOffset)
 
 void Camera::zoom(float offset)
 {
-    _cameraPos += offset * cameraFront() * _zoomSensitivity;
+     const auto newCameraPos = _cameraPos + offset * cameraFront() * _zoomSensitivity;
+
+    // Avoid zoom reversing the camerapos
+    if(glm::dot(_cameraCenter - _cameraPos, _cameraCenter - newCameraPos) <= 0.01f)
+        return;
+
+    _cameraPos = newCameraPos;
+
     _viewMatrixDirty = true;
 }
 
