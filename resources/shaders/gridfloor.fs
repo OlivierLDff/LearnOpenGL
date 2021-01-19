@@ -3,10 +3,10 @@
 in vec3 nearPoint;
 in vec3 farPoint;
 
-uniform mat4 view;
-uniform mat4 projectionView;
-uniform float near;
-uniform float far;
+uniform mat4 viewMatrix;
+uniform mat4 viewProjectionMatrix;
+uniform float nearPlane;
+uniform float farPlane;
 
 uniform vec4 lineColor;
 uniform vec4 backgroundColor;
@@ -16,7 +16,7 @@ uniform vec4 zAxisColor;
 uniform float lineWidth;
 uniform float lineScale;
 
-out vec4 FragColor;
+out vec4 fragColor;
 
 vec4 grid(vec3 pos, vec3 color, float width, float size)
 {
@@ -49,7 +49,7 @@ vec4 grid(vec3 pos, vec3 color, float width, float size)
 
 float computeDepth(vec3 point)
 {
-    vec4 clipPoint = projectionView * vec4(point.xyz, 1);
+    vec4 clipPoint = viewProjectionMatrix * vec4(point.xyz, 1);
     return (clipPoint.z / clipPoint.w)/2 + 0.5;
 }
 
@@ -64,9 +64,9 @@ void main()
 
     vec4 color = grid(worldPos, vec3(lineColor), lineWidth, lineScale);
 
-    vec4 viewPoint = view * vec4(worldPos, 1.0);
+    vec4 viewPoint = viewMatrix * vec4(worldPos, 1.0);
 
-    float cameraDepth = (-viewPoint.z / far);
+    float cameraDepth = (-viewPoint.z / farPlane);
     float smoothCameraDepth = 1.0 - smoothstep(0.5, 1, cameraDepth);
 
     if(color.a <= 0.1)
@@ -74,5 +74,5 @@ void main()
 
     color.a *= smoothCameraDepth;
 
-    FragColor = vec4(mix(color.rgb, backgroundColor.rgb, 1 - color.a), color.a);
+    fragColor = vec4(mix(color.rgb, backgroundColor.rgb, 1 - color.a), color.a);
 }

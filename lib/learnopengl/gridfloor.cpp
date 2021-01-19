@@ -21,14 +21,14 @@ void GridFloor::draw(const Camera& camera) const
     const auto& view = camera.viewMatrix();
     const auto& projection = camera.projectionMatrix();
 
-    const auto projectionView = projection * view;
-    const auto projectionViewInv = glm::inverse(projectionView);
+    const auto viewProjection = projection * view;
+    const auto inverseViewProjection = glm::inverse(viewProjection);
 
-    _shader->setMat4("view", glm::value_ptr(view));
-    _shader->setMat4("projectionView", glm::value_ptr(projectionView));
-    _shader->setMat4("projectionViewInv", glm::value_ptr(projectionViewInv));
-    _shader->setFloat("near", camera.near());
-    _shader->setFloat("far", camera.far());
+    _shader->setMat4("viewMatrix", glm::value_ptr(view));
+    _shader->setMat4("viewProjectionMatrix", glm::value_ptr(viewProjection));
+    _shader->setMat4("inverseViewProjectionMatrix", glm::value_ptr(inverseViewProjection));
+    _shader->setFloat("nearPlane", camera.near());
+    _shader->setFloat("farPlane", camera.far());
 
     _shader->setVec4("xAxisColor", _xAxisColor.r, _xAxisColor.g, _xAxisColor.b, _drawXAxis ? 1.f : 0.f);
     _shader->setVec4("yAxisColor", _yAxisColor.r, _yAxisColor.g, _yAxisColor.b, _drawYAxis ? 1.f : 0.f);
